@@ -1,36 +1,28 @@
-import sys
 import json
+import sys
 
-def fill_values(obj, values_map):
-    if isinstance(obj, dict):
-        if 'id' in obj and obj['id'] in values_map:
-            obj['value'] = values_map[obj['id']]
-        for key, val in obj.items():
-            fill_values(val, values_map)
-    elif isinstance(obj, list):
-        for item in obj:
-            fill_values(item, values_map)
+values_file = sys.argv[1]
+tests_file = sys.argv[2]
+report_file = sys.argv[3]
 
-def main():
-    if len(sys.argv) != 4:
-        print("Usage: python task3.py <values.json> <tests.json> <report.json>")
-        return
+values = json.load(open(values_file))
+tests = json.load(open(tests_file))
 
-    values_path = sys.argv[1]
-    tests_path = sys.argv[2]
-    report_path = sys.argv[3]
+values_dict = {}
+for item in values['values']:
+    values_dict[item['id']] = item['value']
 
-    with open(values_path, 'r') as f:
-        values_data = json.load(f)
-    values_map = {item['id']: item['value'] for item in values_data}
 
-    with open(tests_path, 'r') as f:
-        tests_data = json.load(f)
+def fill_values(test):
+    if isinstance(test, dict):
+        if 'id' in test and test['id'] in values_dict:
+            test['value'] = values_dict[test['id']]
 
-    fill_values(tests_data, values_map)
+        if 'values' in test:
+            for sub_test in test['values']:
+                fill_values(sub_test)
 
-    with open(report_path, 'w') as f:
-        json.dump(tests_data, f, indent=2)
+for test in tests['tests']:
+    fill_values(test)
 
-if __name__ == "__main__":
-    main()
+json.dump(tests, open(report_file, 'w'), indent=4)

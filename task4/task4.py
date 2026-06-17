@@ -1,30 +1,26 @@
 import sys
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python task4.py <numbers_file>")
-        return
+filename = sys.argv[1]
 
-    filepath = sys.argv[1]
-    nums = []
-    with open(filepath, 'r') as f:
-        for line in f:
-            if line.strip():
-                nums.append(int(line.strip()))
+nums = []
+with open(filename, 'r') as file:
+    for line in file:
+        nums.append(int(line.strip()))
+nums.sort()
+a = nums[len(nums) // 2]
 
-    if not nums:
-        print(0)
-        return
+count = 0
+for num in nums:
+    while num != a:
+        if num < a:
+            num += 1
+            count += 1
+        elif num > a:
+            num -= 1
+            count += 1
 
-    nums.sort()
-    n = len(nums)
-    median = nums[n // 2]
-    moves = sum(abs(x - median) for x in nums)
+if count > 20:
+    print("20 ходов не достаточно для приведения всех элементов массива к одному числу")  
+else:
+    print(count)   
 
-    if moves > 20:
-        print("20 ходов недостаточно для приведения всех элементов массива к одному числу")
-    else:
-        print(moves)
-
-if __name__ == "__main__":
-    main()
