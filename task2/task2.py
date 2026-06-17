@@ -15,6 +15,3 @@ for line in file2:
         print(0)
     else:
         print(2)
-
-file1.close()
-file2.close()
